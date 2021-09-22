@@ -1,0 +1,76 @@
+{
+  "parser": "@babel/eslint-parser",
+  "extends": [
+    "airbnb",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:jsx-a11y/recommended",
+    "plugin:sonarjs/recommended",
+    "plugin:promise/recommended",
+    "plugin:flowtype/recommended",
+    "plugin:jest/recommended",
+    "plugin:jest/style"
+  ],
+  "plugins": [
+    "react",
+    "jsx-a11y",
+    "optimize-regex",
+    "sonarjs",
+    "no-loops",
+    "no-use-extend-native",
+    "promise",
+    "flowtype",
+    "@babel",
+    "simple-import-sort",
+    "jest"
+  ],
+  "rules": {
+    "react/prop-types": "off",
+    "react/jsx-filename-extension": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "packageDir": "./"
+      }
+    ],
+    "optimize-regex/optimize-regex": "warn",
+    "sonarjs/cognitive-complexity": [
+      "error",
+      30
+    ],
+    "no-loops/no-loops": 2,
+    "no-use-extend-native/no-use-extend-native": 2,
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
+    "eol-last": [
+      "error",
+      "always"
+    ],
+    "no-multiple-empty-lines": [
+      "error"
+    ],
+    "simple-import-sort/imports": "error"
+  },
+  "env": {
+    "browser": true
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    }
+  }
+}

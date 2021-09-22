@@ -1,0 +1,46 @@
+*.pyc
+.idea
+venv*
+
+#pycharm test plugin
+_trial_temp/
+
+#logs
+*.log
+
+# pytest
+__pycache__/
+*__pycache__*
+.pytest_cache
+
+# docker
+pgadmin-data
+postgres-data
+
+# Node
+# dependencies
+node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# jest reporter
+jest_html_reporters.html
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+package-lock.json
+
+# vscode
+.vscode
