@@ -12,27 +12,27 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
 
-  #upload_frontend:
-  #  build:
-  #    dockerfile: Dockerfile.dev
-  #    context: ./frontend
-  #  container_name: upload_frontend
-  #  restart: unless-stopped
-  #  #depends_on:
-  #  #  - ga_backend_orchestrator
-  #  # For debug only
-  #  ports:
-  #    - 3000:3000
-  #  volumes:
-  #    - ./dev.default-frontend.conf:/etc/nginx/conf.d/default.conf
+#  upload_frontend:
+#    build:
+#      dockerfile: Dockerfile.dev
+#      context: ./frontend
+#    container_name: upload_frontend
+#    restart: unless-stopped
+#    command: npm run start
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - '3000:3000'
 
-  #upload_backend:
-  #  build:
-  #    dockerfile: Dockerfile.dev
-  #    context: ./frontend
-  #  container_name: upload_backend
-  #  # For debug only
-  #  ports:
-  #    - 5001:5001
+#  upload_backend:
+#    build:
+#      dockerfile: Dockerfile
+#      context: ./upload_backend
+#    container_name: upload_backend
+#    command:
+#      - dotnet run
+#    # For debug only
+#    ports:
+#      - 5001:5001
 volumes:
   data:
