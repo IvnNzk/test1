@@ -13,6 +13,15 @@ using WebApplication.models;
 
 namespace WebApplication.Controllers
 {
+    static class UploaderBadRequest
+    {
+        public static string FileDoesntExist = "файл не существует";
+        public static string NameShouldContainOnlyLatin = "Имя должно содержать только латинские буквы.";
+        public static string NameShouldntContainCapchaWord = "Имя файла не должно содержать capcha";
+        public static string FileNameLengthShouldBeInRange4_8 = "Длинна имени файла должна быть в диапозоне  от 4 до 8";
+        public static string ImagesCountShouldBeInRange = "Количество картинок должно быть в диапозоне ";
+    }
+
     [ApiController]
     [Route("[controller]")]
     public class DatasetUploaderController : ControllerBase
@@ -40,7 +49,7 @@ namespace WebApplication.Controllers
 
             if (!System.IO.File.Exists(pathToFile))
             {
-                return BadRequest("File doesn't exist");
+                return BadRequest(UploaderBadRequest.FileDoesntExist);
             }
 
             return File(await System.IO.File.ReadAllBytesAsync(pathToFile), "application/octet-stream", fileName);
@@ -49,22 +58,22 @@ namespace WebApplication.Controllers
         [HttpPost]
         [Description("Загрузить файл с dataset")]
         [RequestSizeLimit(10000000000000)]
-        public async Task<ActionResult<Dataset>> Post(IFormFile uploadedFile, bool containCyrillic,
+        public async Task<IActionResult> Post(IFormFile uploadedFile, bool containCyrillic,
             bool containsNumbers, bool containSpecialCharacters, bool caseSensitivity)
         {
             if (!Regex.IsMatch(uploadedFile.FileName, @"^[a-zA-Z.]+$"))
             {
-                return BadRequest("Имя должно содержать только латинские буквы.");
+                return BadRequest(UploaderBadRequest.NameShouldContainOnlyLatin);
             }
 
             if (uploadedFile.FileName.ToLower().Contains("capcha"))
             {
-                return BadRequest("Имя файла не должно содержать capcha");
+                return BadRequest(UploaderBadRequest.NameShouldntContainCapchaWord);
             }
 
             if (uploadedFile.FileName.Length <= 8 && uploadedFile.FileName.Length >= 4)
             {
-                return BadRequest("Длинна файла не должна быть больше");
+                return BadRequest(UploaderBadRequest.FileNameLengthShouldBeInRange4_8);
             }
 
             var fileUUID = Guid.NewGuid();
@@ -75,8 +84,9 @@ namespace WebApplication.Controllers
                 await uploadedFile.CopyToAsync(fileStream);
             }
 
-            int imageCount = 0;
-
+            var countImagaes = 0;
+            var maxCountFiles = SummarizeMaxCountImages(containCyrillic, containsNumbers, containSpecialCharacters,
+                caseSensitivity);
             using (var archive = ZipFile.OpenRead(_appEnvironment.WebRootPath + path))
             {
                 var checkIfExsist = archive.Entries;
@@ -84,65 +94,47 @@ namespace WebApplication.Controllers
                 var bar = archive.Entries.ToList();
                 var entry = archive.Entries.Where((elem) => elem.FullName == "answers.txt");
 
-                var maxCountFiles = 0;
-                if (containCyrillic)
-                {
-                    maxCountFiles += 3000;
-                }
-
-                if (containsNumbers)
-                {
-                    maxCountFiles += 3000;
-                }
-
-                if (containSpecialCharacters)
-                {
-                    maxCountFiles += 3000;
-                }
-
-                if (caseSensitivity)
-                {
-                    maxCountFiles += 3000;
-                }
-
-
-                var countImgaes = 0;
                 foreach (var fileInArchive in archive.Entries)
                 {
                     if (Regex.IsMatch(fileInArchive.FullName, @"^.*\.(jpg|JPG)$"))
                     {
-                        countImgaes++;
+                        countImagaes++;
                     }
                 }
 
-                if (maxCountFiles < countImgaes || countImgaes == 0)
+                if (maxCountFiles < countImagaes || countImagaes == 0)
                 {
-                    return BadRequest("Количество картинок должно быть в диапозоне...");
+                    return BadRequest(UploaderBadRequest.ImagesCountShouldBeInRange + maxCountFiles.ToString());
                 }
             }
 
+            /*
+             *bool containCyrillic,
+            bool containsNumbers, bool containSpecialCharacters, bool caseSensitivity
+             */
             var dataset = new Dataset()
             {
                 Id = fileUUID,
                 FileName = uploadedFile.FileName,
                 CreatedAt = DateTime.Now,
-                ImagesCount = 2000,
-                ContainCyrillic = true,
-                ContainsNumbers = true,
-                ContainSpecialCharacters = true,
-                CaseSensitivity = true,
+                ImagesCount = countImagaes,
+                ContainCyrillic = containCyrillic,
+                ContainsNumbers = containsNumbers,
+                ContainSpecialCharacters = containSpecialCharacters,
+                CaseSensitivity = caseSensitivity,
                 AnswersType = AnswersTypeEnum.AnswersFile,
             };
 
             _dbContext.Datasets.Add(dataset);
             await _dbContext.SaveChangesAsync();
-            return CreatedAtAction("GetById", new { id = dataset.Id });
+
+            return CreatedAtAction(nameof(GetById), new { id = dataset.Id }, dataset);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Dataset))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(string id)
         {
             if (_dbContext.Datasets.Find(id) != null)
             {
@@ -150,6 +142,34 @@ namespace WebApplication.Controllers
             }
 
             return Ok();
+        }
+
+        [NonAction]
+        static int SummarizeMaxCountImages(bool containCyrillic, bool containsNumbers, bool containSpecialCharacters,
+            bool caseSensitivity)
+        {
+            int maxCountFiles = 0;
+            if (containCyrillic)
+            {
+                maxCountFiles += 3000;
+            }
+
+            if (containsNumbers)
+            {
+                maxCountFiles += 3000;
+            }
+
+            if (containSpecialCharacters)
+            {
+                maxCountFiles += 3000;
+            }
+
+            if (caseSensitivity)
+            {
+                maxCountFiles += 3000;
+            }
+
+            return maxCountFiles;
         }
     }
 }

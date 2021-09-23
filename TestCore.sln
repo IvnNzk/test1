@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "upload_backend", "upload_backend\upload_backend.csproj", "{866D3C05-4D84-47AA-9DEC-DA40A006375D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDbConnection", "TestDbConnection\TestDbConnection.csproj", "{48E38FB4-B71D-4E77-87D9-905ADFEF088C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,9 +12,5 @@ Global
 		{866D3C05-4D84-47AA-9DEC-DA40A006375D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{866D3C05-4D84-47AA-9DEC-DA40A006375D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{866D3C05-4D84-47AA-9DEC-DA40A006375D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48E38FB4-B71D-4E77-87D9-905ADFEF088C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48E38FB4-B71D-4E77-87D9-905ADFEF088C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48E38FB4-B71D-4E77-87D9-905ADFEF088C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48E38FB4-B71D-4E77-87D9-905ADFEF088C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
